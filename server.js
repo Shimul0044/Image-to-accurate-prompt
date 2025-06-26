@@ -1,145 +1,73 @@
-// server.js (নতুন এবং সহজ ভার্সন)
+// server.js (সংশোধিত এবং সঠিক ভার্সন)
 
 const express = require('express');
 const cors = require('cors');
-const { v4: uuidv4 } = require('uuid');
-
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// ইন-মেমোরি ডাটাবেস
-let licensesDB = [];
+// --- স্থায়ী লাইসেন্স ডেটাবেস (Hardcoded) ---
+// সার্ভার রিস্টার্ট হলেও এই ডেটা মুছে যাবে না।
+// নতুন লাইসেন্স কী যোগ করতে হলে, এখানেই যোগ করে কোডটি আবার ডেপ্লয় করতে হবে।
+// এটিই আপনার জন্য সবচেয়ে সহজ এবং নির্ভরযোগ্য সমাধান।
+const licenses = {
+  "EXAMPLE-KEY-12345": { duration_days: 30, activated_on: null, device_id: null },
+  "ANOTHER-KEY-ABCDE": { duration_days: 90, activated_on: null, device_id: null },
+  "SPECIAL-USER-KEY-XYZ": { duration_days: 365, activated_on: null, device_id: null }
+};
 
-// ডেভেলপারদের জন্য: নতুন লাইসেন্স কী তৈরি করার লিংক
-app.get('/generate-key', (req, res) => {
-    const duration = parseInt(req.query.days) || 30;
-    const newKey = `UNLOCK-KEY-${uuidv4().toUpperCase()}`;
-    licensesDB.push({ license_key: newKey, duration_days: duration, is_activated: false, device_id: null, activated_on: null });
-    console.log(licensesDB);
-    res.status(201).json({ message: `New ${duration}-day unlock key generated`, newKey: newKey });
-});
 
-// এক্সটেনশনের জন্য: লাইসেন্স কী একটিভেট করার এন্ডপয়েন্ট
+// --- লাইসেন্স অ্যাক্টিভেশন এন্ডপয়েন্ট ---
+// আপনার ক্রোম এক্সটেনশন এই URL (`/api/activate`) এ কল করবে।
 app.post('/api/activate', (req, res) => {
     const { licenseKey, deviceId } = req.body;
-    if (!licenseKey || !deviceId) return res.status(400).json({ message: 'License key and device ID are required.' });
 
-    const license = licensesDB.find(l => l.license_key === licenseKey);
-    if (!license) return res.status(404).json({ message: 'License key not found.' });
-    if (license.is_activated && license.device_id !== deviceId) return res.status(403).json({ message: 'This license key is already in use on another device.' });
-    if (license.is_activated && license.device_id === deviceId) {
-        // যদি একই ডিভাইস আবার একটিভেট করতে চায়, তাহলে শুধু বর্তমান স্ট্যাটাস পাঠিয়ে দিন
-    } else {
-        license.is_activated = true;
-        license.device_id = deviceId;
-        license.activated_on = new Date();
+    // ১. প্রয়োজনীয় তথ্য (licenseKey, deviceId) পাঠানো হয়েছে কিনা তা যাচাই করুন।
+    if (!licenseKey || !deviceId) {
+        return res.status(400).json({ message: 'License key and device ID are required.' });
+    }
+
+    // ২. লাইসেন্স কী আমাদের তালিকায় আছে কিনা তা দেখুন।
+    const licenseData = licenses[licenseKey];
+    if (!licenseData) {
+        return res.status(404).json({ message: 'License key not found or invalid.' });
+    }
+
+    // ৩. লাইসেন্সটি আগে থেকেই অন্য কোনো ডিভাইসে অ্যাক্টিভেট করা আছে কিনা দেখুন।
+    if (licenseData.device_id && licenseData.device_id !== deviceId) {
+        return res.status(403).json({ message: 'This license key is already in use on another device.' });
+    }
+
+    // ৪. যদি লাইসেন্সটি আগে অ্যাক্টিভেট না হয়ে থাকে, তাহলে অ্যাক্টিভেট করুন।
+    if (!licenseData.activated_on) {
+        licenseData.activated_on = new Date().toISOString();
+        licenseData.device_id = deviceId;
+        console.log(`License ${licenseKey} activated for the first time on device ${deviceId}.`);
+    }
+
+    // ৫. লাইসেন্সের মেয়াদ কবে শেষ হবে তা গণনা করুন।
+    const activationDate = new Date(licenseData.activated_on);
+    const expiresOn = new Date(activationDate);
+    expiresOn.setDate(activationDate.getDate() + licenseData.duration_days);
+
+    // ৬. লাইসেন্সের মেয়াদ শেষ হয়ে গেছে কিনা যাচাই করুন।
+    if (new Date() > expiresOn) {
+        return res.status(403).json({ message: 'This license has expired.' });
     }
     
-    const expiresOn = new Date(license.activated_on);
-    expiresOn.setDate(expiresOn.getDate() + license.duration_days);
-
-    if (new Date() > expiresOn) return res.status(403).json({ message: 'This license has expired.' });
-
-    res.status(200).json({ message: 'License is valid!', expiresOn: expiresOn, licenseKey: license.license_key });
+    // ৭. সফলভাবে অ্যাক্টিভেট হলে এক্সটেনশনকে সঠিক তথ্য পাঠান।
+    console.log(`License ${licenseKey} validated successfully for device ${deviceId}.`);
+    res.status(200).json({
+        message: 'License activated successfully!',
+        licenseKey: licenseKey,
+        expiresOn: expiresOn.toISOString()
+    });
 });
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));// server.js (নতুন এবং সহজ ভার্সন)
 
-const express = require('express');
-const cors = require('cors');
-const { v4: uuidv4 } = require('uuid');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json());
-
-// ইন-মেমোরি ডাটাবেস
-let licensesDB = [];
-
-// ডেভেলপারদের জন্য: নতুন লাইসেন্স কী তৈরি করার লিংক
-app.get('/generate-key', (req, res) => {
-    const duration = parseInt(req.query.days) || 30;
-    const newKey = `UNLOCK-KEY-${uuidv4().toUpperCase()}`;
-    licensesDB.push({ license_key: newKey, duration_days: duration, is_activated: false, device_id: null, activated_on: null });
-    console.log(licensesDB);
-    res.status(201).json({ message: `New ${duration}-day unlock key generated`, newKey: newKey });
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
-
-// এক্সটেনশনের জন্য: লাইসেন্স কী একটিভেট করার এন্ডপয়েন্ট
-app.post('/api/activate', (req, res) => {
-    const { licenseKey, deviceId } = req.body;
-    if (!licenseKey || !deviceId) return res.status(400).json({ message: 'License key and device ID are required.' });
-
-    const license = licensesDB.find(l => l.license_key === licenseKey);
-    if (!license) return res.status(404).json({ message: 'License key not found.' });
-    if (license.is_activated && license.device_id !== deviceId) return res.status(403).json({ message: 'This license key is already in use on another device.' });
-    if (license.is_activated && license.device_id === deviceId) {
-        // যদি একই ডিভাইস আবার একটিভেট করতে চায়, তাহলে শুধু বর্তমান স্ট্যাটাস পাঠিয়ে দিন
-    } else {
-        license.is_activated = true;
-        license.device_id = deviceId;
-        license.activated_on = new Date();
-    }
-    
-    const expiresOn = new Date(license.activated_on);
-    expiresOn.setDate(expiresOn.getDate() + license.duration_days);
-
-    if (new Date() > expiresOn) return res.status(403).json({ message: 'This license has expired.' });
-
-    res.status(200).json({ message: 'License is valid!', expiresOn: expiresOn, licenseKey: license.license_key });
-});
-
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));// server.js (নতুন এবং সহজ ভার্সন)
-
-const express = require('express');
-const cors = require('cors');
-const { v4: uuidv4 } = require('uuid');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json());
-
-// ইন-মেমোরি ডাটাবেস
-let licensesDB = [];
-
-// ডেভেলপারদের জন্য: নতুন লাইসেন্স কী তৈরি করার লিংক
-app.get('/generate-key', (req, res) => {
-    const duration = parseInt(req.query.days) || 30;
-    const newKey = `UNLOCK-KEY-${uuidv4().toUpperCase()}`;
-    licensesDB.push({ license_key: newKey, duration_days: duration, is_activated: false, device_id: null, activated_on: null });
-    console.log(licensesDB);
-    res.status(201).json({ message: `New ${duration}-day unlock key generated`, newKey: newKey });
-});
-
-// এক্সটেনশনের জন্য: লাইসেন্স কী একটিভেট করার এন্ডপয়েন্ট
-app.post('/api/activate', (req, res) => {
-    const { licenseKey, deviceId } = req.body;
-    if (!licenseKey || !deviceId) return res.status(400).json({ message: 'License key and device ID are required.' });
-
-    const license = licensesDB.find(l => l.license_key === licenseKey);
-    if (!license) return res.status(404).json({ message: 'License key not found.' });
-    if (license.is_activated && license.device_id !== deviceId) return res.status(403).json({ message: 'This license key is already in use on another device.' });
-    if (license.is_activated && license.device_id === deviceId) {
-        // যদি একই ডিভাইস আবার একটিভেট করতে চায়, তাহলে শুধু বর্তমান স্ট্যাটাস পাঠিয়ে দিন
-    } else {
-        license.is_activated = true;
-        license.device_id = deviceId;
-        license.activated_on = new Date();
-    }
-    
-    const expiresOn = new Date(license.activated_on);
-    expiresOn.setDate(expiresOn.getDate() + license.duration_days);
-
-    if (new Date() > expiresOn) return res.status(403).json({ message: 'This license has expired.' });
-
-    res.status(200).json({ message: 'License is valid!', expiresOn: expiresOn, licenseKey: license.license_key });
-});
-
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
