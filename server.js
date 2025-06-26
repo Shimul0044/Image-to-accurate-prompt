@@ -16,10 +16,9 @@ app.use(express.json());
 const licenses = {
   "EXAMPLE-KEY-12345": { duration_days: 30, activated_on: null, device_id: null },
   "ANOTHER-KEY-ABCDE": { duration_days: 90, activated_on: null, device_id: null },
-  "SPECIAL-USER-KEY-XYZ": { duration_days: 365, activated_on: null, device_id: null }
+  "SPECIAL-USER-KEY-XYZ": { duration_days: 365, activated_on: null, device_id: null },
   "XAMPLE-KEY-12345": { duration_days: 1, activated_on: null, device_id: null },
 };
-
 
 // --- লাইসেন্স অ্যাক্টিভেশন এন্ডপয়েন্ট ---
 // আপনার ক্রোম এক্সটেনশন এই URL (`/api/activate`) এ কল করবে।
