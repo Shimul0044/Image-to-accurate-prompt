@@ -15,6 +15,8 @@ app.use(express.json());
 // এটিই আপনার জন্য সবচেয়ে সহজ এবং নির্ভরযোগ্য সমাধান।
 const licenses = {
   "EXAMPLE-KEY-12345": { duration_days: 30, activated_on: null, device_id: null },
+  "siyam-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
+  "rasel-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
   "ANOTHER-KEY-ABCDE": { duration_days: 90, activated_on: null, device_id: null },
   "SPECIAL-USER-KEY-XYZ": { duration_days: 365, activated_on: null, device_id: null },
   "XAMPLE-KEY-12345": { duration_days: 1, activated_on: null, device_id: null },
