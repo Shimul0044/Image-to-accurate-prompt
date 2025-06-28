@@ -26,6 +26,8 @@ const licenses = {
   "ANOTHER-KEY-ABCDE": { duration_days: 90, activated_on: null, device_id: null },
   "SPECIAL-USER-KEY-XYZ": { duration_days: 365, activated_on: null, device_id: null },
   "XAMPLE-KEY-12345": { duration_days: 1, activated_on: null, device_id: null },
+  "f8a5b3c2-7d1e-4f6a-8c9b-0a1e2f3d4c5b": { duration_days: , activated_on: null, device_id: null },
+  "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d": { duration_days: 7, activated_on: null, device_id: null },
 };
 
 
