@@ -11,7 +11,6 @@ app.use(express.json());
 
 // --- Permanent License Database (Hardcoded) ---
 const licenses = {
-  "EXAMPLE-KEY-12345": { duration_days: 30, activated_on: null, device_id: null },
   "siyam-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
   "rasel-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
   "razzak-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
