@@ -11,22 +11,12 @@ app.use(express.json());
 
 // --- Permanent License Database (Hardcoded) ---
 const licenses = {
-  "siyam-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "rasel-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "razzak-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "utpal-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "f6dhuff-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "fok9iw37r-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "7fher3rudh-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "733642891-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "1239455121-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "08438265627-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "udejf98qfdd-KEY-fd6d9g44sdf6f7y": { duration_days: 7, activated_on: null, device_id: null },
-  "ANOTHER-KEY-ABCDE": { duration_days: 90, activated_on: null, device_id: null },
-  "SPECIAL-USER-KEY-XYZ": { duration_days: 365, activated_on: null, device_id: null },
-  "XAMPLE-KEY-12345": { duration_days: 1, activated_on: null, device_id: null },
-  "f8a5b3c2-7d1e-4f6a-8c9b-0a1e2f3d4c5b": { duration_days: 7, activated_on: null, device_id: null },
-  "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d": { duration_days: 7, activated_on: null, device_id: null },
+    "XAMPLE-KEY-123456": { duration_days: 1, activated_on: null, device_id: null },
+    "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d": { duration_days: 7, activated_on: null, device_id: null },
+    "8tgfa7fdf-8c9d-0e1f2a3b4c5d": { duration_days: 365, activated_on: null, device_id: null },
+    "trial-5r98f-hyf67": { duration_days: 7, activated_on: null, device_id: null },
+    "trial-edftf-frf98f": { duration_days: 7, activated_on: null, device_id: null },
+    "trial-dhfurgf5-7f7g87f8": { duration_days: 7, activated_on: null, device_id: null },
 };
 
 
