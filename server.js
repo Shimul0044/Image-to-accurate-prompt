@@ -15,7 +15,7 @@ const licenses = {
     "trial-dhfurgf5-7f7g87f8": { duration_days: 7, activated_on: null, device_id: null },
     "trial-ed56ftf-78393rh": { duration_days: 3, activated_on: null, device_id: null },
     "trial-edft5gtf-i4982r": { duration_days: 3, activated_on: null, device_id: null },
-    "trial-edfgetwttf-48976f": { duration_days: 1, activated_on: null, device_id: null },
+    "5j00yWEBBUJI8RF3JJ3YH": { duration_days: 1, activated_on: null, device_id: null },
 };
 
 
