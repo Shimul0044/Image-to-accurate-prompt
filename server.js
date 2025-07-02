@@ -12,8 +12,10 @@ app.use(express.json());
 // --- Permanent License Database (Hardcoded) ---
 const licenses = {
     "XAMPLE-KEY-123456": { duration_days: 1, activated_on: null, device_id: null },
-    "trial-edftf-frf98f": { duration_days: 7, activated_on: null, device_id: null },
     "trial-dhfurgf5-7f7g87f8": { duration_days: 7, activated_on: null, device_id: null },
+    "trial-ed56ftf-78393rh": { duration_days: 3, activated_on: null, device_id: null },
+    "trial-edft5gtf-i4982r": { duration_days: 3, activated_on: null, device_id: null },
+    "trial-edfgetwttf-48976f": { duration_days: 1, activated_on: null, device_id: null },
 };
 
 
